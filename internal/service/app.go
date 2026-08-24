@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -84,9 +85,10 @@ func (a *Application) Receive(wire codec.WireMessage) (model.ReceiveResult, erro
 		return a.reject(message, "policy", err), nil
 	}
 	if err := a.guard.Reserve(message.ChannelNumber, message.Nonce); err != nil {
-		if err == security.ErrDuplicateNonce {
+		if errors.Is(err, security.ErrDuplicateNonce) {
 			return a.reject(message, "duplicate-nonce", err), nil
 		}
+		return model.ReceiveResult{}, err
 	}
 	a.sequence++
 	message.Sequence = a.sequence
