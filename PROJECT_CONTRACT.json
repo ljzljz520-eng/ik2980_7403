@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "metrics": {
+    "production_loc": 2396,
+    "production_files": 29,
+    "production_packages": 7,
+    "test_files": 9,
+    "production_functions": 224,
+    "decision_points": 327
+  },
+  "persistence": {
+    "module": "go.etcd.io/bbolt",
+    "entities": [
+      "ChannelRecord",
+      "BatchRecord",
+      "ProtectedMessage",
+      "AuditEntry"
+    ],
+    "reopen_test": "TestPersistenceSurvivesReopen"
+  },
+  "workflows": [
+    {
+      "steps": [
+        "register an authenticated channel",
+        "create a sending batch with an expected count",
+        "encode and authenticate a deterministic short report",
+        "receive the report and persist an accepted audit entry"
+      ],
+      "test": "TestWorkflowRegisterSendReceiveAndAudit"
+    },
+    {
+      "steps": [
+        "prepare a channel and batch",
+        "corrupt the authentication tag on a received frame",
+        "submit a frame addressed to an unknown channel",
+        "display rejection outcomes with security reasons"
+      ],
+      "test": "TestWorkflowRejectsCorruptTagAndWrongChannel"
+    },
+    {
+      "steps": [
+        "build a prioritized deterministic delivery plan",
+        "transmit each planned short report",
+        "process accepted results into the plan counters",
+        "render completion and audit status for the operator"
+      ],
+      "test": "TestWorkflowDispatchesDeterministicPlan"
+    }
+  ]
+}
